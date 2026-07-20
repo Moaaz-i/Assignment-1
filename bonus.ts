@@ -1,3 +1,5 @@
+import { fileURLToPath } from "url";
+
 // Assignment 1 - Part 3: Bonus Question (LeetCode 2665 - Counter II)
 
 type ReturnObj = {
@@ -6,7 +8,7 @@ type ReturnObj = {
   reset: () => number;
 };
 
-function createCounter(init: number): ReturnObj {
+export function createCounter(init: number): ReturnObj {
   let val = init;
   return {
     increment: () => {
@@ -45,4 +47,6 @@ function runBonus() {
   );
 }
 
-runBonus();
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  runBonus();
+}
