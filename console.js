@@ -1,5 +1,5 @@
 // Implementation code mapping
-export const codeStore = {
+const codeStore = {
   q1: `export function q1_stringToNumber(str: string): number {
   return Number(str) + 7;
 }`,
@@ -98,30 +98,48 @@ export const codeStore = {
 };
 
 // Live Execution Functions
-export const q1_stringToNumber = (str) => Number(str) + 7;
-export const q2_checkFalsy = (val) => !val ? "Invalid" : val;
-export const q3_printOddNumbers = () => {
+const q1_stringToNumber = (str) => Number(str) + 7;
+const q2_checkFalsy = (val) => !val ? "Invalid" : val;
+const q3_printOddNumbers = () => {
   const r = [];
   for(let i=1;i<=10;i++) { if(i%2!==0) r.push(i); }
   return r.join(", ");
 };
-export const q4_filterEvenNumbers = (arr) => arr.filter(n => n % 2 === 0);
-export const q5_mergeArrays = (a1, a2) => [...a1, ...a2];
-export const q6_getDayOfWeek = (n) => {
+const q4_filterEvenNumbers = (arr) => arr.filter(n => n % 2 === 0);
+const q5_mergeArrays = (a1, a2) => [...a1, ...a2];
+const q6_getDayOfWeek = (n) => {
   const days = ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return days[n] || "Invalid Day";
 };
-export const q7_getStringLengths = (arr) => arr.map(s => s.length);
-export const q8_checkDivisibility = (n) => {
+const q7_getStringLengths = (arr) => arr.map(s => s.length);
+const q8_checkDivisibility = (n) => {
   if (n % 3 === 0 && n % 5 === 0) return "Divisible by both";
   if (n % 3 === 0) return "Divisible by 3";
   if (n % 5 === 0) return "Divisible by 5";
   return "Not divisible by 3 or 5";
 };
-export const q9_square = (n) => n * n;
-export const q10_formatPerson = (p) => `${p.name} is ${p.age} years old`;
-export const q11_sumMultiple = (...nums) => nums.reduce((a,c) => a+c, 0);
-export const q12_delaySuccess = () => new Promise(res => setTimeout(() => res("Success"), 3000));
-export const q13_findLargest = (arr) => Math.max(...arr);
-export const q14_getObjectKeys = (obj) => Object.keys(obj);
-export const q15_splitString = (str) => str.trim().split(/\s+/);
+const q9_square = (n) => n * n;
+const q10_formatPerson = (p) => `${p.name} is ${p.age} years old`;
+const q11_sumMultiple = (...nums) => nums.reduce((a,c) => a+c, 0);
+const q12_delaySuccess = () => new Promise(res => setTimeout(() => res("Success"), 3000));
+const q13_findLargest = (arr) => Math.max(...arr);
+const q14_getObjectKeys = (obj) => Object.keys(obj);
+const q15_splitString = (str) => str.trim().split(/\s+/);
+
+// Expose variables globally on window so console.html script can access them safely under file:// protocol
+window.codeStore = codeStore;
+window.q1_stringToNumber = q1_stringToNumber;
+window.q2_checkFalsy = q2_checkFalsy;
+window.q3_printOddNumbers = q3_printOddNumbers;
+window.q4_filterEvenNumbers = q4_filterEvenNumbers;
+window.q5_mergeArrays = q5_mergeArrays;
+window.q6_getDayOfWeek = q6_getDayOfWeek;
+window.q7_getStringLengths = q7_getStringLengths;
+window.q8_checkDivisibility = q8_checkDivisibility;
+window.q9_square = q9_square;
+window.q10_formatPerson = q10_formatPerson;
+window.q11_sumMultiple = q11_sumMultiple;
+window.q12_delaySuccess = q12_delaySuccess;
+window.q13_findLargest = q13_findLargest;
+window.q14_getObjectKeys = q14_getObjectKeys;
+window.q15_splitString = q15_splitString;
