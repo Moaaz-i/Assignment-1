@@ -11,7 +11,6 @@ Assignment1/
 ├── package.json          # Dependency management and run scripts
 ├── tsconfig.json         # TypeScript configuration
 ├── index.ts              # Part 1: Solutions to the 15 coding exercises
-├── essay.md              # Part 2: Answers to the 5 conceptual questions
 ├── bonus.ts              # Part 3: LeetCode Counter II (Bonus)
 └── index.test.ts         # Automated unit test suite (Vitest)
 ```
@@ -71,14 +70,6 @@ npm test
 13. **Array Maximum**: Find the largest number in an array.
 14. **Object Keys**: Retrieve all keys of a given object.
 15. **Split Words**: Split a string into words based on spaces.
-
-### Part 2: Essay Questions (`essay.md`)
-Detailed explanations and code snippets covering:
-- Differences and use-cases of `forEach` vs `for...of`.
-- Hoisting mechanics and the Temporal Dead Zone (TDZ).
-- Strict equality (`===`) vs Loose equality (`==`).
-- Error handling in asynchronous flows using `try-catch`.
-- Explicit Type Conversion vs Implicit Coercion.
 
 ### Part 3: Bonus Question (`bonus.ts`)
 - Solving LeetCode 2665 (Counter II) with TypeScript types.
