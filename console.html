@@ -31,6 +31,7 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     header {
@@ -51,6 +52,54 @@
     header p {
       font-size: 0.85rem;
       color: var(--text-muted);
+    }
+
+    /* Code Viewer Panel (At the Top) */
+    .code-viewer-panel {
+      background-color: #090d13;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      height: 220px;
+      min-height: 220px;
+    }
+
+    .code-viewer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .code-viewer-title {
+      font-weight: 600;
+      color: var(--primary);
+      font-family: var(--font-mono);
+    }
+
+    .code-display {
+      flex: 1;
+      background-color: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-color);
+      overflow: auto;
+      white-space: pre;
+    }
+
+    .code-placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
     }
 
     main {
@@ -113,6 +162,11 @@
       transform: translateY(-1px);
     }
 
+    .console-item.active {
+      border-color: var(--primary);
+      background-color: rgba(88, 166, 255, 0.05);
+    }
+
     .item-summary {
       padding: 0.75rem 1rem;
       display: flex;
@@ -131,22 +185,6 @@
     .item-output {
       color: var(--green);
       font-weight: bold;
-    }
-
-    .code-details {
-      display: none;
-      border-top: 1px solid var(--border-color);
-      background-color: rgba(0, 0, 0, 0.2);
-      padding: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--text-color);
-      overflow-x: auto;
-      white-space: pre;
-    }
-
-    .code-details.open {
-      display: block;
     }
 
     .hint-click {
@@ -179,9 +217,20 @@
       <h1>Assignment 1 &amp; Bonus - Interactive Console</h1>
     </div>
     <div>
-      <p>Click on any exercise to view the underlying JavaScript implementation code.</p>
+      <p>Select any item below to display its implementation code in the viewer.</p>
     </div>
   </header>
+
+  <!-- Large Code Viewer Panel -->
+  <div class="code-viewer-panel">
+    <div class="code-viewer-header">
+      <div class="code-viewer-title" id="current-code-title">Active Implementation: None</div>
+      <div>JavaScript Code</div>
+    </div>
+    <div class="code-display" id="code-display-box">
+      <div class="code-placeholder">Click on any exercise below to load and view its code implementation here.</div>
+    </div>
+  </div>
 
   <main>
     <!-- Index.ts Section (Left) -->
@@ -344,9 +393,13 @@
       reset: () => counterVal = 5
     };
 
+    const codeDisplayBox = document.getElementById('code-display-box');
+    const currentCodeTitle = document.getElementById('current-code-title');
+
     // Create Console UI Item
     function createConsoleItem(id, callLabel, outputVal, codeKey) {
       const container = document.createElement('div');
+      container.id = id;
       container.className = 'console-item';
 
       const summary = document.createElement('div');
@@ -354,21 +407,22 @@
       summary.innerHTML = `
         <div>
           <span class="item-label">${callLabel}</span>
-          <span class="hint-click">(Click to view code)</span>
+          <span class="hint-click">(Click to load code)</span>
         </div>
         <span class="item-output">${outputVal}</span>
       `;
 
-      const details = document.createElement('pre');
-      details.className = 'code-details';
-      details.textContent = codeStore[codeKey];
-
       summary.addEventListener('click', () => {
-        details.classList.toggle('open');
+        // Remove active class from all items
+        document.querySelectorAll('.console-item').forEach(el => el.classList.remove('active'));
+        // Set this item active
+        container.classList.add('active');
+        // Update top large viewer content
+        codeDisplayBox.textContent = codeStore[codeKey];
+        currentCodeTitle.textContent = `Active Implementation: ${callLabel.split('(')[0]}`;
       });
 
       container.appendChild(summary);
-      container.appendChild(details);
       return container;
     }
 
