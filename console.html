@@ -374,7 +374,7 @@
 
     // Build Index List
     const indexList = document.getElementById('index-list');
-    indexList.appendChild(createConsoleItem('q1', 'q1_stringToNumber("123") + 7', q1_stringToNumber("123"), 'q1'));
+    indexList.appendChild(createConsoleItem('q1', 'q1_stringToNumber("123") + 7', q1_stringToNumber("123") + 7, 'q1'));
     indexList.appendChild(createConsoleItem('q2', 'q2_checkFalsy(0)', JSON.stringify(q2_checkFalsy(0)), 'q2'));
     indexList.appendChild(createConsoleItem('q3', 'q3_printOddNumbers()', `"${q3_printOddNumbers()}"`, 'q3'));
     indexList.appendChild(createConsoleItem('q4', 'q4_filterEvenNumbers([1,2,3,4,5])', JSON.stringify(q4_filterEvenNumbers([1,2,3,4,5])), 'q4'));
