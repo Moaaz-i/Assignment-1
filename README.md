@@ -46,9 +46,28 @@ npm run bonus
 
 ### 3. Run Automated Tests
 Runs the test suite inside `index.test.ts` via Vitest. It validates all 15 exercises and the bonus code across 16 test cases.
-```bash
 npm test
 ```
+
+### 4. Open Interactive Console (Web UI)
+Opens the interactive visual console in your default web browser, allowing real-time execution testing and code viewing:
+```bash
+npm run console
+```
+
+---
+
+## 🖥️ Interactive HTML Console Dashboard
+
+We have provided a premium, fully interactive web dashboard to test all assignment functions in real-time.
+
+![Interactive Console Dashboard Screenshot](console.png)
+
+### Features:
+- **Interactive Inputs**: Modify input arguments (numbers, strings, arrays, objects) inside the text fields and see the output recalculate instantly.
+- **Dynamic Split View**: Dual-panel design separating `index.ts` exercises on the left and `bonus.ts` (Counter II) on the right.
+- **Shared Code Viewer**: Click on any running exercise to instantly display its underlying JavaScript/TypeScript implementation in a dedicated syntax panel at the top.
+- **Async Execution Support**: Real-time simulation of asynchronous promises (Q12) and stateful counters (Bonus Counter).
 
 ---
 
