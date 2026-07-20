@@ -155,6 +155,7 @@
       border-radius: 6px;
       overflow: hidden;
       transition: transform 0.2s, border-color 0.2s;
+      min-height: 48px;
     }
 
     .console-item:hover {
@@ -164,7 +165,7 @@
 
     .console-item.active {
       border-color: var(--primary);
-      background-color: rgba(88, 166, 255, 0.05);
+      background-color: rgba(88, 166, 255, 0.1);
     }
 
     .item-summary {
@@ -172,10 +173,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       cursor: pointer;
       user-select: none;
       font-family: var(--font-mono);
       font-size: 0.85rem;
+      color: #e6edf3;
     }
 
     .item-label {
