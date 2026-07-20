@@ -184,6 +184,26 @@
 
     .item-label {
       color: var(--yellow);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .item-input-field {
+      background: #0d1117;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--primary);
+      padding: 0.1rem 0.3rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      width: 120px;
+      outline: none;
+    }
+
+    .item-input-field:focus {
+      border-color: var(--primary);
     }
 
     .item-output {
@@ -221,7 +241,7 @@
       <h1>Assignment 1 &amp; Bonus - Interactive Console</h1>
     </div>
     <div>
-      <p>Select any item below to display its implementation code in the viewer.</p>
+      <p>Select any item to display code. Change input values inside input boxes to compute outputs dynamically.</p>
     </div>
   </header>
 
@@ -389,41 +409,79 @@
     const q14_getObjectKeys = (obj) => Object.keys(obj);
     const q15_splitString = (str) => str.trim().split(/\s+/);
 
-    // Counter instance for bonus
+    // Counter State for Bonus
+    let currentCounterInit = 5;
     let counterVal = 5;
     const counter = {
       increment: () => ++counterVal,
       decrement: () => --counterVal,
-      reset: () => counterVal = 5
+      reset: () => counterVal = currentCounterInit
     };
 
     const codeDisplayBox = document.getElementById('code-display-box');
     const currentCodeTitle = document.getElementById('current-code-title');
 
     // Create Console UI Item
-    function createConsoleItem(id, callLabel, outputVal, codeKey) {
+    function createConsoleItem(id, callLabelHtml, initialOutput, codeKey, inputConfigs, executionFn) {
       const container = document.createElement('div');
       container.id = id;
       container.className = 'console-item';
 
       const summary = document.createElement('div');
       summary.className = 'item-summary';
-      summary.innerHTML = `
-        <div>
-          <span class="item-label">${callLabel}</span>
-          <span class="hint-click">(Click to load code)</span>
-        </div>
-        <span class="item-output">${outputVal}</span>
-      `;
+
+      // Build label area with inputs
+      const labelDiv = document.createElement('div');
+      labelDiv.className = 'item-label';
+      labelDiv.innerHTML = callLabelHtml;
+
+      // Add inputs if configured
+      const inputs = [];
+      if (inputConfigs && inputConfigs.length > 0) {
+        inputConfigs.forEach((cfg) => {
+          const inputEl = document.createElement('input');
+          inputEl.type = 'text';
+          inputEl.className = 'item-input-field';
+          inputEl.value = cfg.initial;
+          inputEl.placeholder = cfg.name;
+          // Prevent triggers container click when selecting input
+          inputEl.addEventListener('click', (e) => e.stopPropagation());
+          
+          inputEl.addEventListener('input', (e) => {
+            try {
+              const updatedVals = inputs.map(i => i.value);
+              const outputEl = container.querySelector('.item-output');
+              const res = executionFn(updatedVals, outputEl);
+              if (res !== undefined) {
+                outputEl.textContent = typeof res === 'object' ? JSON.stringify(res) : res;
+              }
+            } catch (err) {
+              container.querySelector('.item-output').textContent = 'Error';
+            }
+          });
+
+          labelDiv.appendChild(inputEl);
+          inputs.push(inputEl);
+        });
+      }
+
+      const hint = document.createElement('span');
+      hint.className = 'hint-click';
+      hint.textContent = '(Click to load code)';
+      labelDiv.appendChild(hint);
+
+      const outputSpan = document.createElement('span');
+      outputSpan.className = 'item-output';
+      outputSpan.textContent = initialOutput;
+
+      summary.appendChild(labelDiv);
+      summary.appendChild(outputSpan);
 
       summary.addEventListener('click', () => {
-        // Remove active class from all items
         document.querySelectorAll('.console-item').forEach(el => el.classList.remove('active'));
-        // Set this item active
         container.classList.add('active');
-        // Update top large viewer content
         codeDisplayBox.textContent = codeStore[codeKey];
-        currentCodeTitle.textContent = `Active Implementation: ${callLabel.split('(')[0]}`;
+        currentCodeTitle.textContent = `Active Implementation: ${id}`;
       });
 
       container.appendChild(summary);
@@ -432,23 +490,124 @@
 
     // Build Index List
     const indexList = document.getElementById('index-list');
-    indexList.appendChild(createConsoleItem('q1', 'q1_stringToNumber("123") + 7', q1_stringToNumber("123") + 7, 'q1'));
-    indexList.appendChild(createConsoleItem('q2', 'q2_checkFalsy(0)', JSON.stringify(q2_checkFalsy(0)), 'q2'));
-    indexList.appendChild(createConsoleItem('q3', 'q3_printOddNumbers()', `"${q3_printOddNumbers()}"`, 'q3'));
-    indexList.appendChild(createConsoleItem('q4', 'q4_filterEvenNumbers([1,2,3,4,5])', JSON.stringify(q4_filterEvenNumbers([1,2,3,4,5])), 'q4'));
-    indexList.appendChild(createConsoleItem('q5', 'q5_mergeArrays([1,2,3], [4,5,6])', JSON.stringify(q5_mergeArrays([1,2,3],[4,5,6])), 'q5'));
-    indexList.appendChild(createConsoleItem('q6', 'q6_getDayOfWeek(2)', `"${q6_getDayOfWeek(2)}"`, 'q6'));
-    indexList.appendChild(createConsoleItem('q7', 'q7_getStringLengths(["a", "ab", "abc"])', JSON.stringify(q7_getStringLengths(["a", "ab", "abc"])), 'q7'));
-    indexList.appendChild(createConsoleItem('q8', 'q8_checkDivisibility(15)', `"${q8_checkDivisibility(15)}"`, 'q8'));
-    indexList.appendChild(createConsoleItem('q9', 'q9_square(5)', q9_square(5), 'q9'));
-    indexList.appendChild(createConsoleItem('q10', 'q10_formatPerson({ name: "John", age: 25 })', `"${q10_formatPerson({ name: "John", age: 25 })}"`, 'q10'));
-    indexList.appendChild(createConsoleItem('q11', 'q11_sumMultiple(1,2,3,4,5)', q11_sumMultiple(1,2,3,4,5), 'q11'));
-    indexList.appendChild(createConsoleItem('q13', 'q13_findLargest([1,3,7,2,4])', q13_findLargest([1,3,7,2,4]), 'q13'));
-    indexList.appendChild(createConsoleItem('q14', 'q14_getObjectKeys({ name: "John", age: 30 })', JSON.stringify(q14_getObjectKeys({ name: "John", age: 30 })), 'q14'));
-    indexList.appendChild(createConsoleItem('q15', 'q15_splitString("The quick brown fox")', JSON.stringify(q15_splitString("The quick brown fox")), 'q15'));
 
-    // Handle q12 Async
-    const q12Item = createConsoleItem('q12', 'q12_delaySuccess() (waiting 3s...)', 'Pending...', 'q12');
+    // Q1
+    indexList.appendChild(createConsoleItem('q1', 'q1_stringToNumber( ', '130', 'q1', 
+      [{ name: 'str', initial: '"123"' }], 
+      (vals) => {
+        // Strip quotes if they exist
+        const cleaned = vals[0].replace(/^["']|["']$/g, '');
+        return q1_stringToNumber(cleaned);
+      }
+    ));
+
+    // Q2
+    indexList.appendChild(createConsoleItem('q2', 'q2_checkFalsy( ', '"Invalid"', 'q2', 
+      [{ name: 'val', initial: '0' }], 
+      (vals) => {
+        // Parse JS literals securely
+        let parsed;
+        try { parsed = eval(vals[0]); } catch(e) { parsed = vals[0]; }
+        return q2_checkFalsy(parsed);
+      }
+    ));
+
+    // Q3
+    indexList.appendChild(createConsoleItem('q3', 'q3_printOddNumbers()', `"${q3_printOddNumbers()}"`, 'q3', [], () => q3_printOddNumbers()));
+
+    // Q4
+    indexList.appendChild(createConsoleItem('q4', 'q4_filterEvenNumbers( ', '[2,4]', 'q4', 
+      [{ name: 'arr', initial: '[1, 2, 3, 4, 5]' }], 
+      (vals) => {
+        let parsed = JSON.parse(vals[0]);
+        return q4_filterEvenNumbers(parsed);
+      }
+    ));
+
+    // Q5
+    indexList.appendChild(createConsoleItem('q5', 'q5_mergeArrays( ', '[1,2,3,4,5,6]', 'q5', 
+      [{ name: 'arr1', initial: '[1, 2, 3]' }, { name: 'arr2', initial: '[4, 5, 6]' }], 
+      (vals) => {
+        let a1 = JSON.parse(vals[0]);
+        let a2 = JSON.parse(vals[1]);
+        return q5_mergeArrays(a1, a2);
+      }
+    ));
+
+    // Q6
+    indexList.appendChild(createConsoleItem('q6', 'q6_getDayOfWeek( ', '"Monday"', 'q6', 
+      [{ name: 'dayNum', initial: '2' }], 
+      (vals) => q6_getDayOfWeek(parseInt(vals[0], 10))
+    ));
+
+    // Q7
+    indexList.appendChild(createConsoleItem('q7', 'q7_getStringLengths( ', '[1,2,3]', 'q7', 
+      [{ name: 'arr', initial: '["a", "ab", "abc"]' }], 
+      (vals) => {
+        let parsed = JSON.parse(vals[0]);
+        return q7_getStringLengths(parsed);
+      }
+    ));
+
+    // Q8
+    indexList.appendChild(createConsoleItem('q8', 'q8_checkDivisibility( ', '"Divisible by both"', 'q8', 
+      [{ name: 'num', initial: '15' }], 
+      (vals) => q8_checkDivisibility(parseInt(vals[0], 10))
+    ));
+
+    // Q9
+    indexList.appendChild(createConsoleItem('q9', 'q9_square( ', '25', 'q9', 
+      [{ name: 'num', initial: '5' }], 
+      (vals) => q9_square(parseFloat(vals[0]))
+    ));
+
+    // Q10
+    indexList.appendChild(createConsoleItem('q10', 'q10_formatPerson( ', '"John is 25 years old"', 'q10', 
+      [{ name: 'person', initial: '{"name":"John","age":25}' }], 
+      (vals) => {
+        let parsed = JSON.parse(vals[0]);
+        return q10_formatPerson(parsed);
+      }
+    ));
+
+    // Q11
+    indexList.appendChild(createConsoleItem('q11', 'q11_sumMultiple( ', '15', 'q11', 
+      [{ name: '...nums', initial: '1, 2, 3, 4, 5' }], 
+      (vals) => {
+        let nums = vals[0].split(',').map(n => parseFloat(n.trim()));
+        return q11_sumMultiple(...nums);
+      }
+    ));
+
+    // Q13
+    indexList.appendChild(createConsoleItem('q13', 'q13_findLargest( ', '7', 'q13', 
+      [{ name: 'arr', initial: '[1, 3, 7, 2, 4]' }], 
+      (vals) => {
+        let parsed = JSON.parse(vals[0]);
+        return q13_findLargest(parsed);
+      }
+    ));
+
+    // Q14
+    indexList.appendChild(createConsoleItem('q14', 'q14_getObjectKeys( ', '["name","age"]', 'q14', 
+      [{ name: 'obj', initial: '{"name":"John","age":30}' }], 
+      (vals) => {
+        let parsed = JSON.parse(vals[0]);
+        return q14_getObjectKeys(parsed);
+      }
+    ));
+
+    // Q15
+    indexList.appendChild(createConsoleItem('q15', 'q15_splitString( ', '["The","quick","brown","fox"]', 'q15', 
+      [{ name: 'str', initial: '"The quick brown fox"' }], 
+      (vals) => {
+        const cleaned = vals[0].replace(/^["']|["']$/g, '');
+        return q15_splitString(cleaned);
+      }
+    ));
+
+    // Q12 Async
+    const q12Item = createConsoleItem('q12', 'q12_delaySuccess()', 'Pending...', 'q12', [], () => {});
     indexList.appendChild(q12Item);
     q12_delaySuccess().then(res => {
       q12Item.querySelector('.item-output').textContent = `"${res}"`;
@@ -456,12 +615,32 @@
 
     // Build Bonus List
     const bonusList = document.getElementById('bonus-list');
-    bonusList.appendChild(createConsoleItem('b_init', 'const counter = createCounter(5)', 'Initialized to 5', 'bonus'));
-    bonusList.appendChild(createConsoleItem('b1', 'counter.increment()', counter.increment(), 'bonus'));
-    bonusList.appendChild(createConsoleItem('b2', 'counter.increment()', counter.increment(), 'bonus'));
-    bonusList.appendChild(createConsoleItem('b3', 'counter.reset()', counter.reset(), 'bonus'));
-    bonusList.appendChild(createConsoleItem('b4', 'counter.decrement()', counter.decrement(), 'bonus'));
-    bonusList.appendChild(createConsoleItem('b5', 'counter.decrement()', counter.decrement(), 'bonus'));
+    
+    // Custom helper to rebuild/update bonus steps based on custom init value
+    function updateBonusOutputs() {
+      counterVal = currentCounterInit;
+      
+      document.getElementById('b_init').querySelector('.item-output').textContent = `Initialized to ${currentCounterInit}`;
+      document.getElementById('b1').querySelector('.item-output').textContent = counter.increment();
+      document.getElementById('b2').querySelector('.item-output').textContent = counter.increment();
+      document.getElementById('b3').querySelector('.item-output').textContent = counter.reset();
+      document.getElementById('b4').querySelector('.item-output').textContent = counter.decrement();
+      document.getElementById('b5').querySelector('.item-output').textContent = counter.decrement();
+    }
+
+    bonusList.appendChild(createConsoleItem('b_init', 'const counter = createCounter( ', 'Initialized to 5', 'bonus',
+      [{ name: 'init', initial: '5' }],
+      (vals) => {
+        currentCounterInit = parseInt(vals[0], 10) || 0;
+        updateBonusOutputs();
+      }
+    ));
+
+    bonusList.appendChild(createConsoleItem('b1', 'counter.increment()', '6', 'bonus'));
+    bonusList.appendChild(createConsoleItem('b2', 'counter.increment()', '7', 'bonus'));
+    bonusList.appendChild(createConsoleItem('b3', 'counter.reset()', '5', 'bonus'));
+    bonusList.appendChild(createConsoleItem('b4', 'counter.decrement()', '4', 'bonus'));
+    bonusList.appendChild(createConsoleItem('b5', 'counter.decrement()', '3', 'bonus'));
 
   </script>
 </body>
