@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node --experimental-strip-types index.ts",
     "bonus": "node --experimental-strip-types bonus.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "console": "open console.html || xdg-open console.html"
   },
   "devDependencies": {
     "vitest": "^2.1.8"
