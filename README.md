@@ -12,7 +12,12 @@ Assignment1/
 ├── tsconfig.json         # TypeScript configuration
 ├── index.ts              # Part 1: Solutions to the 15 coding exercises
 ├── bonus.ts              # Part 3: LeetCode Counter II (Bonus)
-└── index.test.ts         # Automated unit test suite (Vitest)
+├── index.test.ts         # Automated unit test suite (Vitest)
+└── console-ui/           # Interactive Web Dashboard
+    ├── console.html      # Main dashboard layout page
+    ├── console.css       # Dashboard styling
+    ├── console.js        # Executable logic and mockup data
+    └── console.png       # Dashboard preview screenshot
 ```
 
 ---
@@ -61,7 +66,7 @@ npm run console
 
 We have provided a premium, fully interactive web dashboard to test all assignment functions in real-time.
 
-![Interactive Console Dashboard Screenshot](console.png)
+![Interactive Console Dashboard Screenshot](console-ui/console.png)
 
 ### Features:
 - **Interactive Inputs**: Modify input arguments (numbers, strings, arrays, objects) inside the text fields and see the output recalculate instantly.
