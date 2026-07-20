@@ -35,27 +35,28 @@ npm install
 
 ## 🚀 Execution Scripts
 
-The repository contains scripts configured in `package.json` for seamless execution:
+The repository contains scripts configured in [package.json](package.json) for seamless execution:
 
 ### 1. Run Coding Exercises (Part 1)
-Executes `index.ts` containing the 15 coding tasks.
+Executes [index.ts](index.ts) containing the 15 coding tasks.
 ```bash
 npm start
 ```
 
 ### 2. Run LeetCode Bonus (Part 3)
-Executes `bonus.ts` containing the Counter II solution.
+Executes [bonus.ts](bonus.ts) containing the Counter II solution.
 ```bash
 npm run bonus
 ```
 
 ### 3. Run Automated Tests
-Runs the test suite inside `index.test.ts` via Vitest. It validates all 15 exercises and the bonus code across 16 test cases.
+Runs the test suite inside [index.test.ts](index.test.ts) via Vitest. It validates all 15 exercises and the bonus code across 16 test cases.
+```bash
 npm test
 ```
 
 ### 4. Open Interactive Console (Web UI)
-Opens the interactive visual console in your default web browser, allowing real-time execution testing and code viewing:
+Opens the interactive visual console [console-ui/console.html](console-ui/console.html) in your default web browser, allowing real-time execution testing and code viewing:
 ```bash
 npm run console
 ```
@@ -70,15 +71,15 @@ We have provided a premium, fully interactive web dashboard to test all assignme
 
 ### Features:
 - **Interactive Inputs**: Modify input arguments (numbers, strings, arrays, objects) inside the text fields and see the output recalculate instantly.
-- **Dynamic Split View**: Dual-panel design separating `index.ts` exercises on the left and `bonus.ts` (Counter II) on the right.
-- **Shared Code Viewer**: Click on any running exercise to instantly display its underlying JavaScript/TypeScript implementation in a dedicated syntax panel at the top.
+- **Dynamic Split View**: Dual-panel design separating [index.ts](index.ts) exercises on the left and [bonus.ts](bonus.ts) (Counter II) on the right.
+- **Shared Code Viewer**: Click on any running exercise to instantly display its underlying JavaScript/TypeScript implementation loaded from [console-ui/console.js](console-ui/console.js) and styled by [console-ui/console.css](console-ui/console.css) in a dedicated syntax panel at the top.
 - **Async Execution Support**: Real-time simulation of asynchronous promises (Q12) and stateful counters (Bonus Counter).
 
 ---
 
 ## 📝 Assignment Overview
 
-### Part 1: Coding Tasks (`index.ts`)
+### Part 1: Coding Tasks ([index.ts](index.ts))
 1. **String to Number**: Convert `"123"` to a number and add `7`.
 2. **Falsy Check**: Check if a variable is falsy and return `"Invalid"`.
 3. **Continue Loop**: Print odd numbers from `1` to `10` using `continue`.
@@ -95,5 +96,5 @@ We have provided a premium, fully interactive web dashboard to test all assignme
 14. **Object Keys**: Retrieve all keys of a given object.
 15. **Split Words**: Split a string into words based on spaces.
 
-### Part 3: Bonus Question (`bonus.ts`)
+### Part 3: Bonus Question ([bonus.ts](bonus.ts))
 - Solving LeetCode 2665 (Counter II) with TypeScript types.
