@@ -1,5 +1,3 @@
-import { fileURLToPath } from "url";
-
 // Assignment 1 - Part 1: Coding Questions
 
 // 1. Convert the string "123" to a number and add 7. (0.5 Grade)
@@ -181,6 +179,4 @@ async function runAllExercises() {
   console.log(`    Output: "${promiseResult}"\n`);
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  runAllExercises();
-}
+runAllExercises();

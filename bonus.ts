@@ -1,5 +1,3 @@
-import { fileURLToPath } from "url";
-
 // Assignment 1 - Part 3: Bonus Question (LeetCode 2665 - Counter II)
 
 type ReturnObj = {
@@ -47,6 +45,4 @@ function runBonus() {
   );
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  runBonus();
-}
+runBonus();
