@@ -3,28 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assignment 1 & Bonus - Interactive Console</title>
+  <title>Assignment 1 &amp; Bonus - Interactive Console</title>
   <link rel="stylesheet" href="console.css">
 </head>
 <body>
 
   <header>
     <div>
-      <h1>Assignment 1 &amp; Bonus - Interactive Console</h1>
+      <h1>⚡ Assignment 1 - Interactive Console Dashboard</h1>
     </div>
     <div>
-      <p>Select any item to display code. Change input values inside input boxes to compute outputs dynamically.</p>
+      <p>Select any item below to inspect code &amp; live results. Modify input fields to recalculate outputs dynamically.</p>
     </div>
   </header>
 
-  <!-- Large Code Viewer Panel -->
-  <div class="code-viewer-panel">
-    <div class="code-viewer-header">
-      <div class="code-viewer-title" id="current-code-title">Active Implementation: None</div>
-      <div>JavaScript Code</div>
+  <!-- Dual Split Code & Results Viewer Panel -->
+  <div class="viewer-container">
+    <div class="viewer-panel">
+      <div class="viewer-header">
+        <span class="viewer-title" id="current-code-title">⚡ Active Implementation: None</span>
+        <span class="viewer-badge">Source Code</span>
+      </div>
+      <div class="code-display" id="code-display-box">
+        <div class="code-placeholder">Click on any exercise or essay question below to load its code implementation here.</div>
+      </div>
     </div>
-    <div class="code-display" id="code-display-box">
-      <div class="code-placeholder">Click on any exercise below to load and view its code implementation here.</div>
+
+    <div class="viewer-panel">
+      <div class="viewer-header">
+        <span class="viewer-title" id="current-result-title">📊 Live Output &amp; Evaluation</span>
+        <span class="viewer-badge result-status-badge" id="result-status-badge">Evaluated</span>
+      </div>
+      <div class="result-display" id="result-display-box">
+        <div class="code-placeholder">Live execution outputs, return values, and evaluation details will appear here.</div>
+      </div>
     </div>
   </div>
 
@@ -76,10 +88,24 @@
     };
 
     const codeDisplayBox = document.getElementById('code-display-box');
+    const resultDisplayBox = document.getElementById('result-display-box');
     const currentCodeTitle = document.getElementById('current-code-title');
+    const currentResultTitle = document.getElementById('current-result-title');
 
-    // Create Console UI Item
-    function createConsoleItem(id, callLabelHtml, initialOutput, codeKey, inputConfigs, executionFn) {
+    function updateViewer(id, codeKey, currentOutput) {
+      codeDisplayBox.textContent = codeStore[codeKey] || '// Code unavailable';
+      currentCodeTitle.textContent = `⚡ Active Implementation: ${id}`;
+      currentResultTitle.textContent = `📊 Live Output: ${id}`;
+
+      if (typeof currentOutput === 'object') {
+        resultDisplayBox.textContent = JSON.stringify(currentOutput, null, 2);
+      } else {
+        resultDisplayBox.textContent = currentOutput;
+      }
+    }
+
+    // Create Console UI Item with Enhanced Output Badge
+    function createConsoleItem(id, callLabelHtml, initialOutput, codeKey, inputConfigs, executionFn, detailProvider) {
       const container = document.createElement('div');
       container.id = id;
       container.className = 'console-item';
@@ -101,16 +127,19 @@
           inputEl.className = 'item-input-field';
           inputEl.value = cfg.initial;
           inputEl.placeholder = cfg.name;
-          // Prevent triggers container click when selecting input
           inputEl.addEventListener('click', (e) => e.stopPropagation());
           
-          inputEl.addEventListener('input', (e) => {
+          inputEl.addEventListener('input', () => {
             try {
               const updatedVals = inputs.map(i => i.value);
               const outputEl = container.querySelector('.item-output');
               const res = executionFn(updatedVals, outputEl);
               if (res !== undefined) {
-                outputEl.textContent = typeof res === 'object' ? JSON.stringify(res) : res;
+                const formatted = typeof res === 'object' ? JSON.stringify(res) : res;
+                outputEl.textContent = formatted;
+                if (container.classList.contains('active')) {
+                  updateViewer(id, codeKey, formatted);
+                }
               }
             } catch (err) {
               container.querySelector('.item-output').textContent = 'Error';
@@ -124,143 +153,110 @@
 
       const hint = document.createElement('span');
       hint.className = 'hint-click';
-      hint.textContent = '(Click to load code)';
+      hint.textContent = '(Click for code & details)';
       labelDiv.appendChild(hint);
+
+      // Enhanced Result Badge Container
+      const outputWrapper = document.createElement('div');
+      outputWrapper.className = 'item-output-wrapper';
+
+      const outputPrefix = document.createElement('span');
+      outputPrefix.className = 'item-output-prefix';
+      outputPrefix.textContent = 'Result:';
 
       const outputSpan = document.createElement('span');
       outputSpan.className = 'item-output';
-      outputSpan.textContent = initialOutput;
+      outputSpan.textContent = typeof initialOutput === 'object' ? JSON.stringify(initialOutput) : initialOutput;
+
+      outputWrapper.appendChild(outputPrefix);
+      outputWrapper.appendChild(outputSpan);
 
       summary.appendChild(labelDiv);
-      summary.appendChild(outputSpan);
+      summary.appendChild(outputWrapper);
 
       summary.addEventListener('click', () => {
         document.querySelectorAll('.console-item').forEach(el => el.classList.remove('active'));
         container.classList.add('active');
-        codeDisplayBox.textContent = codeStore[codeKey];
-        currentCodeTitle.textContent = `Active Implementation: ${id}`;
+        const activeOutput = detailProvider ? detailProvider() : container.querySelector('.item-output').textContent;
+        updateViewer(id, codeKey, activeOutput);
       });
 
       container.appendChild(summary);
       return container;
     }
 
-    // Build Index List
+    // Build Index List (Part 1)
     const indexList = document.getElementById('index-list');
 
-    // Q1
     indexList.appendChild(createConsoleItem('q1', 'q1_stringToNumber( ', '130', 'q1', 
       [{ name: 'str', initial: '"123"' }], 
-      (vals) => {
-        // Strip quotes if they exist
-        const cleaned = vals[0].replace(/^["']|["']$/g, '');
-        return q1_stringToNumber(cleaned);
-      }
+      (vals) => q1_stringToNumber(vals[0].replace(/^["']|["']$/g, ''))
     ));
 
-    // Q2
     indexList.appendChild(createConsoleItem('q2', 'q2_checkFalsy( ', '"Invalid"', 'q2', 
       [{ name: 'val', initial: '0' }], 
       (vals) => {
-        // Parse JS literals securely
         let parsed;
         try { parsed = eval(vals[0]); } catch(e) { parsed = vals[0]; }
         return q2_checkFalsy(parsed);
       }
     ));
 
-    // Q3
     indexList.appendChild(createConsoleItem('q3', 'q3_printOddNumbers()', `"${q3_printOddNumbers()}"`, 'q3', [], () => q3_printOddNumbers()));
 
-    // Q4
     indexList.appendChild(createConsoleItem('q4', 'q4_filterEvenNumbers( ', '[2,4]', 'q4', 
       [{ name: 'arr', initial: '[1, 2, 3, 4, 5]' }], 
-      (vals) => {
-        let parsed = JSON.parse(vals[0]);
-        return q4_filterEvenNumbers(parsed);
-      }
+      (vals) => q4_filterEvenNumbers(JSON.parse(vals[0]))
     ));
 
-    // Q5
     indexList.appendChild(createConsoleItem('q5', 'q5_mergeArrays( ', '[1,2,3,4,5,6]', 'q5', 
       [{ name: 'arr1', initial: '[1, 2, 3]' }, { name: 'arr2', initial: '[4, 5, 6]' }], 
-      (vals) => {
-        let a1 = JSON.parse(vals[0]);
-        let a2 = JSON.parse(vals[1]);
-        return q5_mergeArrays(a1, a2);
-      }
+      (vals) => q5_mergeArrays(JSON.parse(vals[0]), JSON.parse(vals[1]))
     ));
 
-    // Q6
     indexList.appendChild(createConsoleItem('q6', 'q6_getDayOfWeek( ', '"Monday"', 'q6', 
       [{ name: 'dayNum', initial: '2' }], 
       (vals) => q6_getDayOfWeek(parseInt(vals[0], 10))
     ));
 
-    // Q7
     indexList.appendChild(createConsoleItem('q7', 'q7_getStringLengths( ', '[1,2,3]', 'q7', 
       [{ name: 'arr', initial: '["a", "ab", "abc"]' }], 
-      (vals) => {
-        let parsed = JSON.parse(vals[0]);
-        return q7_getStringLengths(parsed);
-      }
+      (vals) => q7_getStringLengths(JSON.parse(vals[0]))
     ));
 
-    // Q8
     indexList.appendChild(createConsoleItem('q8', 'q8_checkDivisibility( ', '"Divisible by both"', 'q8', 
       [{ name: 'num', initial: '15' }], 
       (vals) => q8_checkDivisibility(parseInt(vals[0], 10))
     ));
 
-    // Q9
     indexList.appendChild(createConsoleItem('q9', 'q9_square( ', '25', 'q9', 
       [{ name: 'num', initial: '5' }], 
       (vals) => q9_square(parseFloat(vals[0]))
     ));
 
-    // Q10
     indexList.appendChild(createConsoleItem('q10', 'q10_formatPerson( ', '"John is 25 years old"', 'q10', 
       [{ name: 'person', initial: '{"name":"John","age":25}' }], 
-      (vals) => {
-        let parsed = JSON.parse(vals[0]);
-        return q10_formatPerson(parsed);
-      }
+      (vals) => q10_formatPerson(JSON.parse(vals[0]))
     ));
 
-    // Q11
     indexList.appendChild(createConsoleItem('q11', 'q11_sumMultiple( ', '15', 'q11', 
       [{ name: '...nums', initial: '1, 2, 3, 4, 5' }], 
-      (vals) => {
-        let nums = vals[0].split(',').map(n => parseFloat(n.trim()));
-        return q11_sumMultiple(...nums);
-      }
+      (vals) => q11_sumMultiple(...vals[0].split(',').map(n => parseFloat(n.trim())))
     ));
 
-    // Q13
     indexList.appendChild(createConsoleItem('q13', 'q13_findLargest( ', '7', 'q13', 
       [{ name: 'arr', initial: '[1, 3, 7, 2, 4]' }], 
-      (vals) => {
-        let parsed = JSON.parse(vals[0]);
-        return q13_findLargest(parsed);
-      }
+      (vals) => q13_findLargest(JSON.parse(vals[0]))
     ));
 
-    // Q14
     indexList.appendChild(createConsoleItem('q14', 'q14_getObjectKeys( ', '["name","age"]', 'q14', 
       [{ name: 'obj', initial: '{"name":"John","age":30}' }], 
-      (vals) => {
-        let parsed = JSON.parse(vals[0]);
-        return q14_getObjectKeys(parsed);
-      }
+      (vals) => q14_getObjectKeys(JSON.parse(vals[0]))
     ));
 
-    // Q15
     indexList.appendChild(createConsoleItem('q15', 'q15_splitString( ', '["The","quick","brown","fox"]', 'q15', 
       [{ name: 'str', initial: '"The quick brown fox"' }], 
-      (vals) => {
-        const cleaned = vals[0].replace(/^["']|["']$/g, '');
-        return q15_splitString(cleaned);
-      }
+      (vals) => q15_splitString(vals[0].replace(/^["']|["']$/g, ''))
     ));
 
     // Q12 Async
@@ -272,25 +268,73 @@
 
     // Build Essay List (Part 2)
     const essayList = document.getElementById('essay-list');
-    essayList.appendChild(createConsoleItem('eq1', 'Q1: forEach vs for...of', 'Array Method vs Iterable Loop', 'eq1', [], eq1_forEachVsForOf));
-    essayList.appendChild(createConsoleItem('eq2', 'Q2: Hoisting & TDZ', 'var vs let/const initialization', 'eq2', [], eq2_hoistingAndTDZ));
-    essayList.appendChild(createConsoleItem('eq3', 'Q3: == vs ===', 'Implicit Coercion vs Strict Comparison', 'eq3', [], eq3_looseVsStrictEquality));
-    essayList.appendChild(createConsoleItem('eq4', 'Q4: Try-Catch in Async', 'Catching Promise Rejections', 'eq4', [], eq4_tryCatchInAsync));
-    essayList.appendChild(createConsoleItem('eq5', 'Q5: Conversion vs Coercion', 'Explicit vs Implicit Type casting', 'eq5', [], eq5_typeConversionVsCoercion));
 
-    // Build Bonus List
+    essayList.appendChild(createConsoleItem('eq1', 'Q1: forEach vs for...of', 'Array Method vs Iterable Loop', 'eq1', [], eq1_forEachVsForOf, () => ({
+      Question: "What is the difference between forEach and for...of? When would you use each?",
+      forEach: "Array prototype callback method. Cannot use break/continue/await. Skips empty array slots.",
+      forOf: "Language-level iterable loop statement. Supports break, continue, return, and sequential await.",
+      Recommendation: "Use forEach for clean array processing without early exit. Use for...of when break/continue/await is required.",
+      DemoOutput: { forEachOutput: [20, 40, 60], forOfOutput: [20, 40] }
+    })));
+
+    essayList.appendChild(createConsoleItem('eq2', 'Q2: Hoisting & TDZ', 'var vs let/const initialization', 'eq2', [], eq2_hoistingAndTDZ, () => ({
+      Question: "What is hoisting and what is the Temporal Dead Zone (TDZ)? Explain with examples.",
+      Hoisting: "Declarations are moved to scope top during compilation. Functions fully hoisted, var initialized to undefined.",
+      TDZ: "Period between entering scope and let/const initialization line. Accessing variable in TDZ throws ReferenceError.",
+      Examples: {
+        varHoisting: "console.log(a); // undefined \n var a = 5;",
+        functionHoisting: "greet(); // 'Hello!' \n function greet() { ... }",
+        tdzError: "console.log(b); // ReferenceError: Cannot access 'b' before initialization \n let b = 10;"
+      },
+      DemoOutput: { varVal: undefined, fnVal: "Function called before definition", tdzCaught: true }
+    })));
+
+    essayList.appendChild(createConsoleItem('eq3', 'Q3: == vs ===', 'Implicit Coercion vs Strict Comparison', 'eq3', [], eq3_looseVsStrictEquality, () => ({
+      Question: "What are the main differences between == and ===?",
+      Loose_Equality: "== performs implicit type coercion before comparing values.",
+      Strict_Equality: "=== compares both value AND type without type coercion.",
+      Comparisons: [
+        { expr: '"5" vs 5', loose: true, strict: false },
+        { expr: "0 vs false", loose: true, strict: false },
+        { expr: "null vs undefined", loose: true, strict: false }
+      ]
+    })));
+
+    essayList.appendChild(createConsoleItem('eq4', 'Q4: Try-Catch in Async', 'Catching Promise Rejections', 'eq4', [], eq4_tryCatchInAsync, () => ({
+      Question: "Explain how try-catch works and why it is important in async operations.",
+      Mechanism: "Code inside try executes; errors shift execution to catch block. Finally block executes cleanup logic.",
+      AsyncImportance: "Async operations (network, I/O) can fail. try-catch around await expressions catches rejected promises synchronously in function context, preventing process crashes."
+    })));
+
+    essayList.appendChild(createConsoleItem('eq5', 'Q5: Conversion vs Coercion', 'Explicit vs Implicit Type casting', 'eq5', [], eq5_typeConversionVsCoercion, () => ({
+      Question: "What's the difference between type conversion and coercion? Provide examples of each.",
+      Explicit_Conversion: "Deliberate casting by developer using Number(), String(), Boolean().",
+      Implicit_Coercion: "Automatic casting by JS engine during mixed-type operations (e.g. '10' - 5 = 5, 'Ans: ' + 42).",
+      Examples: {
+        explicit: [ { code: 'Number("42")', result: 42 }, { code: 'String(100)', result: "100" } ],
+        implicit: [ { code: '"10" - 5', result: 5 }, { code: '"The answer is " + 42', result: "The answer is 42" } ]
+      }
+    })));
+
+    // Build Bonus List (Part 3)
     const bonusList = document.getElementById('bonus-list');
     
-    // Custom helper to rebuild/update bonus steps based on custom init value
     function updateBonusOutputs() {
       counterVal = currentCounterInit;
       
-      document.getElementById('b_init').querySelector('.item-output').textContent = `Initialized to ${currentCounterInit}`;
-      document.getElementById('b1').querySelector('.item-output').textContent = counter.increment();
-      document.getElementById('b2').querySelector('.item-output').textContent = counter.increment();
-      document.getElementById('b3').querySelector('.item-output').textContent = counter.reset();
-      document.getElementById('b4').querySelector('.item-output').textContent = counter.decrement();
-      document.getElementById('b5').querySelector('.item-output').textContent = counter.decrement();
+      const bInitOutput = `Initialized to ${currentCounterInit}`;
+      const b1Val = counter.increment();
+      const b2Val = counter.increment();
+      const b3Val = counter.reset();
+      const b4Val = counter.decrement();
+      const b5Val = counter.decrement();
+
+      document.getElementById('b_init').querySelector('.item-output').textContent = bInitOutput;
+      document.getElementById('b1').querySelector('.item-output').textContent = b1Val;
+      document.getElementById('b2').querySelector('.item-output').textContent = b2Val;
+      document.getElementById('b3').querySelector('.item-output').textContent = b3Val;
+      document.getElementById('b4').querySelector('.item-output').textContent = b4Val;
+      document.getElementById('b5').querySelector('.item-output').textContent = b5Val;
     }
 
     bonusList.appendChild(createConsoleItem('b_init', 'const counter = createCounter( ', 'Initialized to 5', 'bonus',
@@ -298,14 +342,15 @@
       (vals) => {
         currentCounterInit = parseInt(vals[0], 10) || 0;
         updateBonusOutputs();
+        return `Initialized to ${currentCounterInit}`;
       }
     ));
 
-    bonusList.appendChild(createConsoleItem('b1', 'counter.increment()', '6', 'bonus'));
-    bonusList.appendChild(createConsoleItem('b2', 'counter.increment()', '7', 'bonus'));
-    bonusList.appendChild(createConsoleItem('b3', 'counter.reset()', '5', 'bonus'));
-    bonusList.appendChild(createConsoleItem('b4', 'counter.decrement()', '4', 'bonus'));
-    bonusList.appendChild(createConsoleItem('b5', 'counter.decrement()', '3', 'bonus'));
+    bonusList.appendChild(createConsoleItem('b1', 'counter.increment()', '6', 'bonus', [], () => counter.increment()));
+    bonusList.appendChild(createConsoleItem('b2', 'counter.increment()', '7', 'bonus', [], () => counter.increment()));
+    bonusList.appendChild(createConsoleItem('b3', 'counter.reset()', '5', 'bonus', [], () => counter.reset()));
+    bonusList.appendChild(createConsoleItem('b4', 'counter.decrement()', '4', 'bonus', [], () => counter.decrement()));
+    bonusList.appendChild(createConsoleItem('b5', 'counter.decrement()', '3', 'bonus', [], () => counter.decrement()));
 
   </script>
 </body>
