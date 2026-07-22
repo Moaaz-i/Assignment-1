@@ -78,6 +78,65 @@ const codeStore = {
   q15: `export function q15_splitString(str: string): string[] {
   return str.trim().split(/\\s+/);
 }`,
+  eq1: `// 1. Difference between forEach and for...of
+export function q1_forEachVsForOf() {
+  // forEach: Array method, cannot use break/continue/await
+  // for...of: Iterable loop statement, supports break/continue/await
+  const forEachOutput = [];
+  [10, 20, 30].forEach(v => forEachOutput.push(v * 2));
+
+  const forOfOutput = [];
+  for (const v of [10, 20, 30]) {
+    if (v === 30) break; // Early termination support
+    forOfOutput.push(v * 2);
+  }
+  return { forEachOutput, forOfOutput };
+}`,
+  eq2: `// 2. Hoisting and Temporal Dead Zone (TDZ)
+export function q2_hoistingAndTDZ() {
+  // var is hoisted & initialized to undefined
+  // let/const are hoisted into TDZ (throws ReferenceError before initialization)
+  // function declarations are fully hoisted with implementation
+  var varVal = hoistedVar;
+  var hoistedVar = "assigned";
+  
+  function hoistedFunction() { return "Called before line"; }
+  
+  return { varVal, fnVal: hoistedFunction() };
+}`,
+  eq3: `// 3. Differences between == and ===
+export function q3_looseVsStrictEquality() {
+  // == performs implicit type coercion before comparison
+  // === compares both value AND type strictly without coercion
+  return [
+    { expr: '"5" vs 5', loose: "5" == 5, strict: "5" === 5 },
+    { expr: '0 vs false', loose: 0 == false, strict: 0 === false },
+    { expr: 'null vs undefined', loose: null == undefined, strict: null === undefined }
+  ];
+}`,
+  eq4: `// 4. Try-Catch in Async Operations
+export function q4_tryCatchInAsync() {
+  // Prevents unhandled promise rejections & Node process crashes
+  // Synchronously catches async errors inside async/await blocks
+  async function fetchData() {
+    try {
+      const res = await Promise.reject(new Error("Network Error"));
+      return res;
+    } catch (err) {
+      return { caught: true, error: err.message };
+    }
+  }
+  return fetchData();
+}`,
+  eq5: `// 5. Type Conversion vs Coercion
+export function q5_typeConversionVsCoercion() {
+  // Explicit Conversion: Programmer intentionally converts (Number("42"), String(100))
+  // Implicit Coercion: JS converts automatically ("10" - 5 -> 5, "5" + 2 -> "52")
+  return {
+    explicitConversion: Number("42"),
+    implicitCoercion: "10" - 5
+  };
+}`,
   bonus: `export function createCounter(init: number): ReturnObj {
   let val = init;
   return {
@@ -126,6 +185,13 @@ const q13_findLargest = (arr) => Math.max(...arr);
 const q14_getObjectKeys = (obj) => Object.keys(obj);
 const q15_splitString = (str) => str.trim().split(/\s+/);
 
+// Part 2 Essay Live Execution Helpers
+const eq1_forEachVsForOf = () => "forEach (Array method) vs for...of (Iterable loop with break/await)";
+const eq2_hoistingAndTDZ = () => "var: hoisted (undefined) | let/const: TDZ (ReferenceError)";
+const eq3_looseVsStrictEquality = () => '"5"==5 is true (coerced), "5"===5 is false (strict)';
+const eq4_tryCatchInAsync = () => "Catches async await promise rejections gracefully";
+const eq5_typeConversionVsCoercion = () => 'Explicit: Number("42") vs Implicit: "10" - 5';
+
 // Expose variables globally on window so console.html script can access them safely under file:// protocol
 window.codeStore = codeStore;
 window.q1_stringToNumber = q1_stringToNumber;
@@ -143,3 +209,8 @@ window.q12_delaySuccess = q12_delaySuccess;
 window.q13_findLargest = q13_findLargest;
 window.q14_getObjectKeys = q14_getObjectKeys;
 window.q15_splitString = q15_splitString;
+window.eq1_forEachVsForOf = eq1_forEachVsForOf;
+window.eq2_hoistingAndTDZ = eq2_hoistingAndTDZ;
+window.eq3_looseVsStrictEquality = eq3_looseVsStrictEquality;
+window.eq4_tryCatchInAsync = eq4_tryCatchInAsync;
+window.eq5_typeConversionVsCoercion = eq5_typeConversionVsCoercion;

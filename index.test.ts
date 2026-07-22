@@ -17,6 +17,13 @@ import {
   q15_splitString,
 } from "./index.ts";
 import { createCounter } from "./bonus.ts";
+import {
+  q1_forEachVsForOf,
+  q2_hoistingAndTDZ,
+  q3_looseVsStrictEquality,
+  q4_tryCatchInAsync,
+  q5_typeConversionVsCoercion,
+} from "./essay.ts";
 
 describe("Assignment 1 - Coding Questions (Part 1)", () => {
   it("Q1: Convert string to number and add 7", () => {
@@ -99,6 +106,45 @@ describe("Assignment 1 - Coding Questions (Part 1)", () => {
 
   it("Q15: Split string into words", () => {
     expect(q15_splitString("The quick brown fox")).toEqual(["The", "quick", "brown", "fox"]);
+  });
+});
+
+describe("Assignment 1 - Essay Questions (Part 2)", () => {
+  it("Q1: Explain forEach vs for...of", () => {
+    const q1 = q1_forEachVsForOf();
+    expect(q1.explanation).toContain("forEach");
+    expect(q1.differenceTable["Control Flow"]).toBeDefined();
+    expect(q1.demo().forEachOutput).toEqual([20, 40, 60]);
+    expect(q1.demo().forOfOutput).toEqual([20, 40]);
+  });
+
+  it("Q2: Explain hoisting and TDZ", () => {
+    const q2 = q2_hoistingAndTDZ();
+    expect(q2.hoistingExplanation).toContain("Hoisting");
+    expect(q2.tdzExplanation).toContain("Temporal Dead Zone");
+    expect(q2.demo().varVal).toBeUndefined();
+    expect(q2.demo().tdzCaught).toBe(true);
+  });
+
+  it("Q3: Explain == vs ===", () => {
+    const q3 = q3_looseVsStrictEquality();
+    expect(q3.examples.length).toBeGreaterThan(0);
+    expect(q3.examples[0].loose).toBe(true);
+    expect(q3.examples[0].strict).toBe(false);
+  });
+
+  it("Q4: Explain try-catch in async operations", async () => {
+    const q4 = q4_tryCatchInAsync();
+    expect(q4.asyncImportance).toContain("Async");
+    const result = await q4.demoAsyncTryCatch();
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Network connection failed");
+  });
+
+  it("Q5: Explain type conversion vs coercion", () => {
+    const q5 = q5_typeConversionVsCoercion();
+    expect(q5.examples.conversion[0].result).toBe(42);
+    expect(q5.examples.coercion[0].result).toBe("The answer is 42");
   });
 });
 

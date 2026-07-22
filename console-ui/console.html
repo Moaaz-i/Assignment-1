@@ -32,10 +32,21 @@
     <!-- Index.ts Section (Left) -->
     <section class="column">
       <div class="column-header">
-        <span>Part 1: General Exercises (index.ts)</span>
+        <span>Part 1: Coding Exercises (index.ts)</span>
         <span class="badge">15 Exercises</span>
       </div>
       <div class="console-list" id="index-list">
+        <!-- Generated Dynamically -->
+      </div>
+    </section>
+
+    <!-- Essay.ts Section (Middle) -->
+    <section class="column">
+      <div class="column-header">
+        <span>Part 2: Essay Questions (essay.ts)</span>
+        <span class="badge">5 Questions</span>
+      </div>
+      <div class="console-list" id="essay-list">
         <!-- Generated Dynamically -->
       </div>
     </section>
@@ -258,6 +269,14 @@
     q12_delaySuccess().then(res => {
       q12Item.querySelector('.item-output').textContent = `"${res}"`;
     });
+
+    // Build Essay List (Part 2)
+    const essayList = document.getElementById('essay-list');
+    essayList.appendChild(createConsoleItem('eq1', 'Q1: forEach vs for...of', 'Array Method vs Iterable Loop', 'eq1', [], eq1_forEachVsForOf));
+    essayList.appendChild(createConsoleItem('eq2', 'Q2: Hoisting & TDZ', 'var vs let/const initialization', 'eq2', [], eq2_hoistingAndTDZ));
+    essayList.appendChild(createConsoleItem('eq3', 'Q3: == vs ===', 'Implicit Coercion vs Strict Comparison', 'eq3', [], eq3_looseVsStrictEquality));
+    essayList.appendChild(createConsoleItem('eq4', 'Q4: Try-Catch in Async', 'Catching Promise Rejections', 'eq4', [], eq4_tryCatchInAsync));
+    essayList.appendChild(createConsoleItem('eq5', 'Q5: Conversion vs Coercion', 'Explicit vs Implicit Type casting', 'eq5', [], eq5_typeConversionVsCoercion));
 
     // Build Bonus List
     const bonusList = document.getElementById('bonus-list');

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-strip-types index.ts",
+    "essay": "node --experimental-strip-types essay.ts",
     "bonus": "node --experimental-strip-types bonus.ts",
     "test": "vitest run",
     "console": "open console-ui/console.html || xdg-open console-ui/console.html"
